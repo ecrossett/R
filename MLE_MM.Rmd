@@ -1,0 +1,128 @@
+```{r messages = FALSE, warning = FALSE}
+library(statsr)
+library(ggplot2)
+library(dplyr)
+library(stats4)
+
+#set.seed(1234)
+
+
+# draw 10,000 samples of length n from U(0,θ) and compute the MLE and MM estimators of θ for each of the 10,000 samples.
+
+# plot the histograms of the 10,000 MLE and MM estimators, respectively.
+
+# compute the mean, bias and standard error of the MLE and MM estimators in the simulated data.
+
+theta = 1
+
+M = 10000
+
+s20 <- rep(0,20)
+s100 <-rep(0,100)
+s1000 <-rep(0,1000)
+
+mle20 <- rep(0,M)
+mle100 <-rep(0,M)
+mle1000 <-rep(0,M)
+
+#set.seed(Sys.time())
+for (i in 1:M){
+    
+        s20 <- runif(20,min = 0, max = theta)
+        s100 <- runif(100,min = 0, max = theta)
+        s1000 <- runif(1000,min = 0, max = theta)
+
+# Find estimate for n = 20
+ll <- function (par) log(par[2] - par[1])  # inverse log likelihood
+hll <- function (par) c(-1, 1) / diff(par)  # hessian
+mle <- optim(par = c(0,1), fn = ll, gr = hll, method = "L-BFGS-B",
+      lower = c(-Inf, max(s20)), upper = c(min(s20), Inf), hessian = TRUE)
+
+mle20[i] <- mle[[1]][2]
+
+# Find estimate for n = 100
+ll <- function (par) log(par[2] - par[1])  # inverse log likelihood
+hll <- function (par) c(-1, 1) / diff(par)  # hessian 
+mle <- optim(par = c(0,1), fn = ll, gr = hll, method = "L-BFGS-B",
+      lower = c(-Inf, max(s100)), upper = c(min(s100), Inf), hessian = TRUE)
+
+mle100[i] <- mle[[1]][2]
+
+# Find estimate for n = 1000
+ll <- function (par) log(par[2] - par[1])  # inverse log likelihood
+hll <- function (par) c(-1, 1) / diff(par)  # hessian
+mle <- optim(par = c(0,1), fn = ll, gr = hll, method = "L-BFGS-B",
+      lower = c(-Inf, max(s1000)), upper = c(min(s1000), Inf), hessian = TRUE)
+
+
+mle1000[i] <- mle[[1]][2]
+}
+
+hist(mle20, main = "Distribution of 10,000 Estimates (of length 20) from U[0,1]", xlab = "Sample Values")
+```
+
+
+```{r messages = FALSE, warning = FALSE}
+hist(mle100, main = "Distribution of 10,000 MLE Estimates (of length 100) from U[0,1]", xlab = "Sample Values")
+```
+
+
+```{r messages = FALSE, warning = FALSE}
+hist(mle1000, main = "Distribution of 10,000 MLE Estimates (of length 1,000) from U[0,1]", xlab = "Sample Values")
+
+```
+
+```{r}
+#For each n, compare the properties of the MLE and MM estimators in these simulations to their theoretical distributions.
+```
+
+
+
+```{r}
+m20 <- mean(mle20)
+m20
+```
+
+
+```{r}
+m100 <- mean(mle100)
+m100
+```
+
+```{r}
+m1000 <- mean(mle1000)
+m1000
+```
+
+```{r}
+bias20 <- m20 - 1
+bias20
+```
+```{r}
+bias100 <- m100 - 1
+bias100
+```
+
+```{r}
+bias1000 <- m1000 - 1
+bias1000
+```
+
+Compute Variance:
+```{r}
+var20 <- (sd(mle20))^2
+var20
+```
+
+```{r}
+var100 <- (sd(mle100))^2
+var100
+```
+
+```{r}
+var1000 <- (sd(mle1000))^2
+var1000
+```
+
+
+
